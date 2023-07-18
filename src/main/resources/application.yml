@@ -1,0 +1,5 @@
+spring:
+  data:
+    mongodb:
+      url: mongodb+srv://alexyoshitake:<password>@webfluxcoursecluster.sneezho.mongodb.net/webflux-course?retryWrites=true&w=majority
+#I7JKchRp06zDCTpa
