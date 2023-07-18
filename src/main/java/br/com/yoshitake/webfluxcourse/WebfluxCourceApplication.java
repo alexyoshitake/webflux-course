@@ -1,4 +1,4 @@
-package br.com.yoshitake.webfluxcource;
+package br.com.yoshitake.webfluxcourse;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
