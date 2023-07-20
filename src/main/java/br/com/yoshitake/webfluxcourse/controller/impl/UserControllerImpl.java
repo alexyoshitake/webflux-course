@@ -1,6 +1,7 @@
 package br.com.yoshitake.webfluxcourse.controller.impl;
 
 import br.com.yoshitake.webfluxcourse.controller.UserController;
+import br.com.yoshitake.webfluxcourse.mapper.UserMapper;
 import br.com.yoshitake.webfluxcourse.model.request.UserRequest;
 import br.com.yoshitake.webfluxcourse.model.response.UserResponse;
 import br.com.yoshitake.webfluxcourse.service.UserService;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
 public class UserControllerImpl implements UserController {
 
 	private final UserService service;
+	private final UserMapper mapper;
 
 	@Override
 	public ResponseEntity<Mono<Void>> save(final UserRequest request) {
@@ -26,8 +28,10 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public ResponseEntity<Mono<UserResponse>> find(String id) {
-		return null;
+	public ResponseEntity<Mono<UserResponse>> findById(String id) {
+		return ResponseEntity.ok().body(
+				this.service.findById(id).map(this.mapper::toResponse)
+		);
 	}
 
 	@Override
