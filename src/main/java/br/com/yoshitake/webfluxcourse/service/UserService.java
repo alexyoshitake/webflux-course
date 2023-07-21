@@ -22,23 +22,30 @@ public class UserService {
 	}
 
 	public Mono<User> findById(final String id) {
-		return this.repository.findById(id)
-				.switchIfEmpty(Mono.error(
-						new ObjectNotFoundException(
-								String.format("Object not found. Id: %s, Type: %s", id, User.class.getSimpleName())
-						)
-				));
+		return this.hadlerNotFound(this.repository.findById(id), id);
 	}
 
-	public Flux<User> findAll(){
+	public Flux<User> findAll() {
 		return this.repository.findAll();
 
 	}
 
-	public Mono<User> update(final String id, UserRequest request){
+	public Mono<User> update(final String id, UserRequest request) {
 		return this.findById(id)
 				.map(entity -> this.mapper.toEntity(request, entity))
 				.flatMap(this.repository::save);
+	}
+
+	public Mono<User> delete(final String id) {
+		return this.hadlerNotFound(this.repository.findAndRemove(id), id);
+	}
+
+	private <T> Mono<T> hadlerNotFound(Mono<T> mono, String id) {
+		return mono.switchIfEmpty(Mono.error(
+				new ObjectNotFoundException(
+						String.format("Object not found. Id: %s, Type: %s", id, User.class.getSimpleName())
+				)
+		));
 	}
 
 }
