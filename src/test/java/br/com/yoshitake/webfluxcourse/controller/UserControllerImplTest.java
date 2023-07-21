@@ -33,6 +33,7 @@ class UserControllerImplTest {
 	private static final String NAME = "Alex";
 	private static final String EMAIL = "alex.yoshitake@gmail.com";
 	private static final String PASSWORD = "123";
+	private static final String BASE_URI = "/users";
 
 	@Autowired
 	private WebTestClient webTestClient;
@@ -52,7 +53,7 @@ class UserControllerImplTest {
 		final var request = new UserRequest(NAME, EMAIL, PASSWORD);
 		when(this.service.save(any(UserRequest.class))).thenReturn(Mono.just(User.builder().build()));
 
-		this.webTestClient.post().uri("/users")
+		this.webTestClient.post().uri(BASE_URI)
 				.contentType(APPLICATION_JSON)
 				.body(fromValue(request))
 				.exchange()
@@ -66,13 +67,13 @@ class UserControllerImplTest {
 	void testSaveWithBadRequest() {
 		final var request = new UserRequest(NAME.concat(" "), EMAIL, PASSWORD);
 
-		this.webTestClient.post().uri("/users")
+		this.webTestClient.post().uri(BASE_URI)
 				.contentType(APPLICATION_JSON)
 				.body(fromValue(request))
 				.exchange()
 				.expectStatus().isBadRequest()
 				.expectBody()
-				.jsonPath("$.path").isEqualTo("/users")
+				.jsonPath("$.path").isEqualTo(BASE_URI)
 				.jsonPath("$.status").isEqualTo(HttpStatus.BAD_REQUEST.value())
 				.jsonPath("$.error").isEqualTo("Validation error")
 				.jsonPath("$.message").isEqualTo("Error on validation attributes")
@@ -90,7 +91,7 @@ class UserControllerImplTest {
 		when(this.service.findById(anyString())).thenReturn(Mono.just(User.builder().build()));
 		when(this.mapper.toResponse(any(User.class))).thenReturn(userResponse);
 
-		this.webTestClient.get().uri("/users/".concat(ID))
+		this.webTestClient.get().uri((BASE_URI + "/").concat(ID))
 				.accept(APPLICATION_JSON)
 				.exchange()
 				.expectStatus().isOk()
@@ -112,7 +113,7 @@ class UserControllerImplTest {
 		when(this.service.findAll()).thenReturn(Flux.just(User.builder().build()));
 		when(this.mapper.toResponse(any(User.class))).thenReturn(userResponse);
 
-		this.webTestClient.get().uri("/users")
+		this.webTestClient.get().uri(BASE_URI)
 				.accept(APPLICATION_JSON)
 				.exchange()
 				.expectStatus().isOk()
@@ -135,7 +136,7 @@ class UserControllerImplTest {
 		when(this.service.update(anyString(), any(UserRequest.class))).thenReturn(Mono.just(User.builder().build()));
 		when(this.mapper.toResponse(any(User.class))).thenReturn(userResponse);
 
-		this.webTestClient.patch().uri("/users/".concat(ID))
+		this.webTestClient.patch().uri((BASE_URI + "/").concat(ID))
 				.contentType(APPLICATION_JSON)
 				.body(fromValue(request))
 				.exchange()
@@ -155,7 +156,7 @@ class UserControllerImplTest {
 	void testDeleteWithSuccess() {
 		when(this.service.delete(anyString())).thenReturn(Mono.just(User.builder().build()));
 
-		this.webTestClient.delete().uri("/users/".concat(ID))
+		this.webTestClient.delete().uri((BASE_URI + "/").concat(ID))
 				.exchange()
 				.expectStatus().isOk();
 
