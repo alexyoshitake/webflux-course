@@ -14,7 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface TrimString {
 
-	String message() default "field cannot have blank spaces at the beginning or at and";
+	String message() default "field cannot have blank spaces at the beginning or at end";
 
 	Class<?>[] groups() default {};
 
