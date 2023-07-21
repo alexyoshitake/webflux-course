@@ -3,6 +3,7 @@ package br.com.yoshitake.webfluxcourse.controller;
 import br.com.yoshitake.webfluxcourse.entity.User;
 import br.com.yoshitake.webfluxcourse.mapper.UserMapper;
 import br.com.yoshitake.webfluxcourse.model.request.UserRequest;
+import br.com.yoshitake.webfluxcourse.model.response.UserResponse;
 import br.com.yoshitake.webfluxcourse.service.UserService;
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.junit.jupiter.api.DisplayName;
@@ -76,7 +77,23 @@ class UserControllerImplTest {
 	}
 
 	@Test
-	void findById() {
+	@DisplayName("Test find by id endpoint with success")
+	void testFindByIdWithSuccess() {
+		final var id = "123456";
+		final var userResponse = new UserResponse(id, "Alex", "alex.yoshitake@gmail.com", "123");
+
+		when(this.service.findById(anyString())).thenReturn(Mono.just(User.builder().build()));
+		when(this.mapper.toResponse(any(User.class))).thenReturn(userResponse);
+
+		this.webTestClient.get().uri("/users/".concat(id))
+				.accept(APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody()
+				.jsonPath("$.id").isEqualTo(id)
+				.jsonPath("$.name").isEqualTo("Alex")
+				.jsonPath("$.email").isEqualTo("alex.yoshitake@gmail.com")
+				.jsonPath("$.password").isEqualTo("123");
 	}
 
 	@Test
