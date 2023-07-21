@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -101,7 +102,22 @@ class UserControllerImplTest {
 	}
 
 	@Test
-	void findAll() {
+	@DisplayName("Test find all endpoint with success")
+	void testFindAllWithSuccess() {
+		final var userResponse = new UserResponse(ID, NAME, EMAIL, PASSWORD);
+
+		when(this.service.findAll()).thenReturn(Flux.just(User.builder().build()));
+		when(this.mapper.toResponse(any(User.class))).thenReturn(userResponse);
+
+		this.webTestClient.get().uri("/users")
+				.accept(APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody()
+				.jsonPath("$.[0].id").isEqualTo(ID)
+				.jsonPath("$.[0].name").isEqualTo(NAME)
+				.jsonPath("$.[0].email").isEqualTo(EMAIL)
+				.jsonPath("$.[0].password").isEqualTo(PASSWORD);
 	}
 
 	@Test
