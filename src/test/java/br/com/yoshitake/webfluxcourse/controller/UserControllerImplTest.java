@@ -58,7 +58,7 @@ class UserControllerImplTest {
 				.exchange()
 				.expectStatus().isCreated();
 
-		verify(this.service, times(1)).save(any(UserRequest.class));
+		verify(this.service).save(any(UserRequest.class));
 	}
 
 	@Test
@@ -100,8 +100,8 @@ class UserControllerImplTest {
 				.jsonPath("$.email").isEqualTo(EMAIL)
 				.jsonPath("$.password").isEqualTo(PASSWORD);
 
-		verify(this.service, times(1)).findById(anyString());
-		verify(this.mapper, times(1)).toResponse(any(User.class));
+		verify(this.service).findById(anyString());
+		verify(this.mapper).toResponse(any(User.class));
 	}
 
 	@Test
@@ -122,13 +122,13 @@ class UserControllerImplTest {
 				.jsonPath("$.[0].email").isEqualTo(EMAIL)
 				.jsonPath("$.[0].password").isEqualTo(PASSWORD);
 
-		verify(this.service, times(1)).findAll();
-		verify(this.mapper, times(1)).toResponse(any(User.class));
+		verify(this.service).findAll();
+		verify(this.mapper).toResponse(any(User.class));
 	}
 
 	@Test
 	@DisplayName("Test update endpoint with success")
-	void testUpdate() {
+	void testUpdateWithSuccess() {
 		final var request = new UserRequest(NAME, EMAIL, PASSWORD);
 		final var userResponse = new UserResponse(ID, NAME, EMAIL, PASSWORD);
 
@@ -146,12 +146,20 @@ class UserControllerImplTest {
 				.jsonPath("$.email").isEqualTo(EMAIL)
 				.jsonPath("$.password").isEqualTo(PASSWORD);
 
-		verify(this.service, times(1)).update(anyString(), any(UserRequest.class));
-		verify(this.mapper, times(1)).toResponse(any(User.class));
+		verify(this.service).update(anyString(), any(UserRequest.class));
+		verify(this.mapper).toResponse(any(User.class));
 	}
 
 	@Test
-	void delete() {
+	@DisplayName("Test delete endpoint with success")
+	void testDeleteWithSuccess() {
+		when(this.service.delete(anyString())).thenReturn(Mono.just(User.builder().build()));
+
+		this.webTestClient.delete().uri("/users/".concat(ID))
+				.exchange()
+				.expectStatus().isOk();
+
+		verify(this.service).delete(anyString());
 	}
 
 }
